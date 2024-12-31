@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "SpReviews" ALTER COLUMN "spId" DROP NOT NULL;

@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int         @id @default(autoincrement())
+  name          String
+  phone         String      @unique
+  password      String
+  address       String?
+  orderQuantity Int         @default(0)
+  role          Role        @default(USER)
+  meal          Meal[]
+  order         Order[]
+  reviews       Reviews[]
+  rating        Float?      @default(0)
+  noOfReviews   Int?        @default(0)
+  review        SpReviews[]
+}
+
+model Meal {
+  id          Int       @id @default(autoincrement())
+  day         Day       @default(SUNDAY)
+  mealType    MealType? @default(LUNCH)
+  sabji       String    @default("")
+  roti        Int       @default(1)
+  rice        String    @default("")
+  salad       Boolean?
+  raita       Boolean?
+  description String?
+  rating      Float?    @default(0)
+  noOfReviews Int?      @default(0)
+  review      Reviews[]
+  price       Float
+  createdAt   DateTime  @default(now())
+  user        User?     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId      Int?
+}
+
+model Reviews {
+  id      Int     @id @default(autoincrement())
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId  Int
+  rating  Int
+  comment String?
+  Meal    Meal?   @relation(fields: [mealId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  mealId  Int?
+}
+
+model SpReviews {
+  id      Int     @id @default(autoincrement())
+  sp      User?   @relation(fields: [spId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  spId    Int?
+  userId  Int?
+  rating  Int
+  comment String?
+}
+
+model Order {
+  id              Int      @id @default(autoincrement())
+  quantity        Int
+  mealType        MealType
+  createdAt       DateTime @default(now())
+  gst             Float?
+  deliveryCharges Float?
+  totalAmount     Float
+  user            User?    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId          Int?
+}
+
+model temporaryUser {
+  id           Int      @id @default(autoincrement())
+  name         String
+  phone        String   @unique
+  password     String
+  address      String?
+  role         String
+  otp          Int      @unique
+  otpExpiresAt DateTime
+  createdAt    DateTime @default(now())
+}
+
+enum MealType {
+  LUNCH
+  DINNER
+}
+
+enum Role {
+  SP
+  USER
+}
+
+enum Day {
+  SUNDAY
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+}
