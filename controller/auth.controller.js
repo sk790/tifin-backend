@@ -157,7 +157,12 @@ export const verifyOTP = async (req, res) => {
         sameSite: "strict",
         expires: new Date(Date.now() + 10 * 365 * 24 * 60 * 60 * 1000),
       })
-      .json({ success: true, message: "User verified successfully", user });
+      .json({
+        success: true,
+        message: "User verified successfully",
+        user,
+        token,
+      });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Internal server error" });
@@ -202,7 +207,12 @@ export const login = async (req, res) => {
         sameSite: "strict",
         expires: new Date(Date.now() + 10 * 365 * 24 * 60 * 60 * 1000),
       })
-      .json({ success: true, message: "User logged in successfully", user:userWithoutPassword });
+      .json({
+        success: true,
+        message: "User logged in successfully",
+        user: userWithoutPassword,
+        token,
+      });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Internal server error" });
@@ -221,7 +231,9 @@ export const logout = (req, res) => {
 export const getAllSp = async (req, res) => {
   const userId = req.user.id;
   if (!userId) {
-    return res.status(405).json({ success: false, message: "Unauthorized rahul bhai" });
+    return res
+      .status(405)
+      .json({ success: false, message: "Unauthorized rahul bhai" });
   }
   try {
     const sp = await prisma.user.findMany({
