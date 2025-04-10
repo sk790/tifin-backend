@@ -101,9 +101,21 @@ export const registerWithoutOtp = async (req, res) => {
         role,
       },
     });
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
     res
       .status(200)
-      .json({ success: true, message: "User registered successfully", user });
+      .json({
+        success: true,
+        message: "User registered successfully",
+        userDetails: {
+          name:user.name,
+          address:user.address,
+          phone:user.phone,
+          token
+        },
+      });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Internal server error" });
@@ -132,7 +144,7 @@ export const verifyOTP = async (req, res) => {
 
     // Move user data from temporary table to main user table
     const user = await prisma.user.create({
-      data: {
+      userDetails: {
         name: tempUser.name,
         phone: tempUser.phone,
         password: tempUser.password, // Already hashed
@@ -198,7 +210,7 @@ export const login = async (req, res) => {
       }
     );
     // Create a copy of the user object and exclude the password
-    const { password: _, ...userWithoutPassword } = user;
+    // const { password: _, ...userWithoutPassword } = user;
     res
       .status(200)
       .cookie("access_token", token, {
@@ -210,8 +222,12 @@ export const login = async (req, res) => {
       .json({
         success: true,
         message: "User logged in successfully",
-        user: userWithoutPassword,
-        token,
+        userDetails: {
+          name: user.name,
+          address: user.address,
+          phone: user.phone,
+          token,
+        },
       });
   } catch (error) {
     console.log(error);

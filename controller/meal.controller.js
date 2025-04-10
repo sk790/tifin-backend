@@ -87,9 +87,18 @@ export const getMeals = async (req, res) => {
 export const getAllMeals = async (req, res) => {
   try {
     const meals = await prisma.meal.findMany({
-      include: { user: true },
+      include: {
+        sp: {
+          select: {
+            id: true,
+            name: true,
+            address: true,
+            phone: true,
+          },
+        },
+      },
     });
-    res.status(200).json({ success: true, meals });
+    res.status(200).json({ success: true,countOfMeals:meals.length, meals });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Something went wrong" });
