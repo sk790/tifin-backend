@@ -98,7 +98,7 @@ export const getAllMeals = async (req, res) => {
         },
       },
     });
-    res.status(200).json({ success: true,countOfMeals:meals.length, meals });
+    res.status(200).json({ success: true, countOfMeals: meals.length, meals });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Something went wrong" });
@@ -118,6 +118,42 @@ export const dayMeal = async (req, res) => {
       include: { user: true },
     });
     res.status(200).json({ success: true, meals });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Something went wrong" });
+  }
+};
+
+export const spWithMeal = async (req, res) => {
+  const days = [
+    "SUNDAY",
+    "MONDAY",
+    "TUESDAY",
+    "WEDNESDAY",
+    "THURSDAY",
+    "FRIDAY",
+    "SATURDAY",
+  ];
+
+  const today = new Date();
+  const dayName = days[today.getDay()];
+  try {
+    const sp = await prisma.user.findMany({
+      where: { role: "SP" },
+      select: {
+        id: true,
+        name: true,
+        phone: true,
+        address: true,
+        rating: true,
+        meal: {
+          where: {
+            day: dayName,
+          },
+        },
+      },
+    });
+    return res.status(200).json({ success: true, sp });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Something went wrong" });
