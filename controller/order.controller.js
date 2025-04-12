@@ -5,7 +5,7 @@ export const addOrder = async (req, res) => {
     req.body;
   const userId = req.user.id;
   console.log(req.user);
-  return res.json({msg:req.user.name});
+  return res.json({msg:req.user});
   
   let mealSp;
   // try {
