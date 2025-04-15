@@ -125,9 +125,10 @@ export const registerWithoutOtp = async (req, res) => {
 };
 
 export const demo = (req, res) => {
-  return res
-    .status(200)
-    .json([{ id: 1, name: "Saurabh", id: 2, name: "Shubham" }]);
+  return res.status(200).json([
+    { id: 1, name: "Saurabh" },
+    { id: 2, name: "Shubham" },
+  ]);
 };
 
 // Verify OTP
