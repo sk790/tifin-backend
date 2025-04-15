@@ -2,6 +2,7 @@ import prisma from "../lib/prismaClient.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import twilio from "twilio";
+import { genrateId } from "../lib/genrateId.js";
 
 const accountSID = process.env.accountSID;
 const authToken = process.env.authToken;
@@ -93,9 +94,11 @@ export const registerWithoutOtp = async (req, res) => {
         .json({ success: false, message: "User already exist" });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
+    const id = genrateId();
     const user = await prisma.user.create({
       data: {
         name,
+        publicId: id,
         phone,
         password: hashedPassword,
         role,
@@ -104,22 +107,25 @@ export const registerWithoutOtp = async (req, res) => {
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "User registered successfully",
-        userDetails: {
-          name:user.name,
-          address:user.address,
-          phone:user.phone,
-          token
-        },
-      });
+    res.status(200).json({
+      success: true,
+      message: "User registered successfully",
+      userDetails: {
+        name: user.name,
+        publicId: id,
+        address: user.address,
+        phone: user.phone,
+        token,
+      },
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
+};
+
+export const demo = (req, res) => {
+  return res.status(200).json({ id: 1, name: "Saurabh" });
 };
 
 // Verify OTP
@@ -224,6 +230,7 @@ export const login = async (req, res) => {
         message: "User logged in successfully",
         userDetails: {
           name: user.name,
+          publicId: user.publicId,
           address: user.address,
           phone: user.phone,
           token,

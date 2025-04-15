@@ -1,4 +1,5 @@
 import { validDays } from "../config/data.js";
+import { genrateId } from "../lib/genrateId.js";
 import prisma from "../lib/prismaClient.js";
 
 export const addMeal = async (req, res) => {
@@ -148,11 +149,16 @@ export const spWithMeal = async (req, res) => {
         rating: true,
         meal: {
           where: {
-            day: dayName,
+            day:dayName
           },
         },
       },
-    });
+    });    
+    if(sp.length == 0){
+      return res.status(404).json({success:false,message:"There are zero sp available"})
+    }
+    console.log(sp[0].meal);
+    
     return res.status(200).json({ success: true, sp });
   } catch (error) {
     console.log(error);
