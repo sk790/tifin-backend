@@ -65,7 +65,7 @@ model SpReviews {
 
 model Order {
   id          Int         @id @default(autoincrement())
-  quantity    String
+  quantity    Int
   mealType    MealType
   createdAt   DateTime    @default(now())
   totalAmount Float
