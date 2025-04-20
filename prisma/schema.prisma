@@ -65,7 +65,7 @@ model SpReviews {
 
 model Order {
   id          Int         @id @default(autoincrement())
-  quantity    Int
+  quantity    String
   mealType    MealType
   createdAt   DateTime    @default(now())
   totalAmount Float
@@ -81,7 +81,7 @@ model temporaryUser {
   name         String
   phone        String   @unique
   password     String
-  address      String?
+  addressz      String?
   role         String
   otp          Int      @unique
   otpExpiresAt DateTime
